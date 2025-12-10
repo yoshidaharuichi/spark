@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三体运动模拟 Visualizer - 纪元版</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            user-select: none;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+
+        /* 顶部 UI 层 */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* 左上角标题和控制区 */
+        .header-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 5px rgba(0,0,0,0.8);
+            pointer-events: auto; /* 允许点击按钮 */
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #fff;
+            background: linear-gradient(90deg, #fff, #88ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 150, 255, 0.4);
+        }
+
+        p {
+            font-size: 0.9rem;
+            max-width: 320px;
+            line-height: 1.5;
+            color: #ccc;
+            margin: 10px 0;
+        }
+
+        .controls {
+            margin-top: 20px;
+            background: rgba(0, 10, 20, 0.7);
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            backdrop-filter: blur(10px);
+            width: fit-content;
+        }
+
+        button {
+            background: rgba(0, 150, 255, 0.2);
+            border: 1px solid rgba(0, 150, 255, 0.5);
+            color: #00d0ff;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: rgba(0, 150, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 150, 255, 0.6);
+            color: white;
+        }
+
+        .slider-container {
+            margin-bottom: 5px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            color: #00d0ff;
+        }
+
+        input[type=range] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: #00d0ff;
+        }
+
+        .legend {
+            margin-top: 15px;
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
+            display: inline-block;
+            border-radius: 50%;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        /* 右上角：纪元状态显示系统 */
+        .status-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-align: right;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            pointer-events: none;
+            background: linear-gradient(to left, rgba(0,0,0,0.6), transparent);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .time-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00d0ff;
+            text-shadow: 0 0 10px rgba(0, 208, 255, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .record-display {
+            font-size: 0.9rem;
+            color: #ffcc00;
+            margin-bottom: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .era-status {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            padding: 5px 10px;
+            border-radius: 2px;
+            display: inline-block;
+            transition: all 0.5s ease;
+        }
+
+        .era-chaotic {
+            color: #ff5555;
+            border: 1px solid #ff5555;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .era-stable {
+            color: #55ff55;
+            border: 1px solid #55ff55;
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .era-log {
+            font-size: 0.9rem;
+            color: #aaa;
+            max-width: 300px;
+            line-height: 1.4;
+            margin-top: 10px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-left: 2px solid #555;
+            margin-left: auto; /* Align right */
+        }
+        
+        .highlight {
+            color: #fff;
+            font-weight: bold;
+        }
+    </style>
+    <!-- Load Three.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+    <div id="ui-layer">
+        <div class="header-panel">
+            <h1>Three-Body Problem</h1>
+            <p>三体世界模拟器。观察三日凌空与长夜漫漫，见证文明在乱纪元与恒纪元间的轮回。</p>
+            
+            <div class="controls">
+                <button id="resetBtn">💥 重新启动宇宙 (Reset)</button>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>时间流逝速度</span>
+                        <span id="speedValue">1.0x</span>
+                    </div>
+                    <input type="range" id="speedSlider" min="0.5" max="3" step="0.1" value="1">
+                </div>
+            </div>
+
+            <div class="legend">
+                <div><span class="dot" style="background:#ff5555; box-shadow:0 0 5px #ff5555;"></span>恒星 A</div>
+                <div><span class="dot" style="background:#55aaff; box-shadow:0 0 5px #55aaff;"></span>恒星 B</div>
+                <div><span class="dot" style="background:#ffdd44; box-shadow:0 0 5px #ffdd44;"></span>恒星 C</div>
+                <div><span class="dot" style="background:#ffffff; box-shadow:0 0 5px #fff;"></span>三体行星</div>
+            </div>
+            
+            <p style="font-size: 0.8rem; margin-top: 15px; opacity: 0.6;">
+                交互：左键旋转 | 滚轮缩放 | 自动追踪行星
+            </p>
+        </div>
+
+        <div class="status-panel">
+            <div class="time-display">Year: <span id="year-counter">0</span></div>
+            <div class="record-display">历史最长恒纪元: <span id="max-stable">0</span> 年</div>
+            <div id="era-badge" class="era-status era-chaotic">乱纪元 (Chaotic Era)</div>
+            <div id="era-log" class="era-log">等待文明诞生...</div>
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script>
+        (function() {
+            // --- 1. 全局配置与状态 ---
+            let timeScale = 1.0;
+            let currentYear = 0;
+            let eraStatus = 'CHAOTIC'; // 'STABLE' or 'CHAOTIC'
+            let stableStartYear = 0;
+            let maxStableDuration = 0; // 记录最长恒纪元
+            
+            // 文明判定参数
+            const MIN_HABITABLE_TEMP = 20; // 虚拟单位
+            const MAX_HABITABLE_TEMP = 80;
+            let consecutiveStableFrames = 0;
+            const FRAMES_TO_STABILIZE = 60; // 需要持续多少帧才算进入恒纪元
+
+            // UI 元素
+            const uiSpeedValue = document.getElementById('speedValue');
+            const speedSlider = document.getElementById('speedSlider');
+            const uiYear = document.getElementById('year-counter');
+            const uiMaxStable = document.getElementById('max-stable');
+            const uiEraBadge = document.getElementById('era-badge');
+            const uiEraLog = document.getElementById('era-log');
+            
+            speedSlider.addEventListener('input', (e) => {
+                timeScale = parseFloat(e.target.value);
+                uiSpeedValue.innerText = timeScale.toFixed(1) + 'x';
+            });
+
+            // --- 2. 初始化场景 ---
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            
+            // 雾效设置：极其微弱，保证背景星空可见
+            scene.fog = new THREE.FogExp2(0x020202, 0.0003); 
+
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10000); // Far plane increased
+            camera.position.set(0, 100, 300);
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.0;
+            
+            while(container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+            container.appendChild(renderer.domElement);
+
+            // --- 3. 材质工场 ---
+            function createGlowTexture(colorStr) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 128; 
+                canvas.height = 128;
+                const context = canvas.getContext('2d');
+                const gradient = context.createRadialGradient(64, 64, 0, 64, 64, 64);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 1)'); 
+                gradient.addColorStop(0.2, colorStr); 
+                gradient.addColorStop(0.5, colorStr.replace('1)', '0.1)'));
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                context.fillStyle = gradient;
+                context.fillRect(0, 0, 128, 128);
+                return new THREE.CanvasTexture(canvas);
+            }
+
+            // --- 4. 视觉升级：修复版银河背景 ---
+            function createGalaxyBackground() {
+                const geometry = new THREE.BufferGeometry();
+                const count = 15000; // 增加粒子数量
+                const positions = new Float32Array(count * 3);
+                const colors = new Float32Array(count * 3);
+                
+                const colorCenter = new THREE.Color(0xffffff); // 中心亮白
+                const colorOut = new THREE.Color(0x3366ff); // 外围冷蓝
+
+                for (let i = 0; i < count; i++) {
+                    let x, y, z;
+                    let r, g, b;
+                    
+                    // 75% 的星星集中在银河盘面，制造明显的“带状”
+                    if (Math.random() < 0.75) {
+                        const angle = Math.random() * Math.PI * 2;
+                        // 距离中心 2000 - 6000
+                        const radius = 2000 + Math.random() * 4000; 
+                        // 扁平化 Y 轴
+                        const spread = 200 * (radius / 2000); // 距离越远越散
+                        
+                        x = Math.cos(angle) * radius;
+                        z = Math.sin(angle) * radius;
+                        y = (Math.random() - 0.5) * spread;
+
+                        // 颜色：越靠近中心越亮白
+                        const mixRatio = Math.random();
+                        const col = colorCenter.clone().lerp(colorOut, mixRatio);
+                        r = col.r;
+                        g = col.g;
+                        b = col.b;
+                    } else {
+                        // 25% 全向散布，作为背景底噪
+                        const radius = 4000 + Math.random() * 4000;
+                        const theta = Math.random() * Math.PI * 2;
+                        const phi = Math.acos(2 * Math.random() - 1);
+                        x = radius * Math.sin(phi) * Math.cos(theta);
+                        y = radius * Math.sin(phi) * Math.sin(theta);
+                        z = radius * Math.cos(phi);
+
+                        // 背景星较暗
+                        r = 0.5; g = 0.5; b = 0.6; 
+                    }
+
+                    positions[i * 3] = x;
+                    positions[i * 3 + 1] = y;
+                    positions[i * 3 + 2] = z;
+
+                    colors[i*3] = r;
+                    colors[i*3+1] = g;
+                    colors[i*3+2] = b;
+                }
+
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+                const material = new THREE.PointsMaterial({
+                    size: 4.0, // 增大尺寸确保可见
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.9,
+                    sizeAttenuation: true, // 启用近大远小
+                    blending: THREE.AdditiveBlending, // 叠加混合，增加亮度
+                    depthWrite: false
+                });
+
+                const galaxy = new THREE.Points(geometry, material);
+                scene.add(galaxy);
+                return galaxy;
+            }
+            const backgroundStars = createGalaxyBackground();
+
+            // --- 5. 天体类 (恒星 & 行星) ---
+            const G = 1.2; 
+            const SOFTENING = 5; 
+            const TRAIL_LENGTH = 700; 
+
+            class CelestialBody {
+                constructor(type, colorHex, mass, radius, glowColorStr, name) {
+                    this.type = type; // 'STAR' or 'PLANET'
+                    this.mass = mass;
+                    this.name = name;
+                    this.velocity = new THREE.Vector3();
+                    this.position = new THREE.Vector3();
+                    
+                    // 几何体
+                    const geometry = new THREE.SphereGeometry(radius, 32, 32);
+                    let material;
+                    
+                    if (type === 'STAR') {
+                        material = new THREE.MeshStandardMaterial({ 
+                            color: colorHex, 
+                            emissive: colorHex,
+                            emissiveIntensity: 3.0,
+                            roughness: 0.2
+                        });
+                    } else {
+                        // 行星材质
+                        material = new THREE.MeshStandardMaterial({
+                            color: 0xaaaaaa,
+                            roughness: 0.8,
+                            metalness: 0.2
+                        });
+                    }
+                    this.mesh = new THREE.Mesh(geometry, material);
+
+                    // 仅恒星发光
+                    if (type === 'STAR') {
+                        // 光晕
+                        const spriteMaterial = new THREE.SpriteMaterial({ 
+                            map: createGlowTexture(glowColorStr),
+                            color: 0xffffff,
+                            transparent: true,
+                            opacity: 0.7,
+                            blending: THREE.AdditiveBlending
+                        });
+                        this.glow = new THREE.Sprite(spriteMaterial);
+                        this.glow.scale.set(radius * 10, radius * 10, 1);
+                        this.mesh.add(this.glow);
+
+                        // 光源
+                        this.light = new THREE.PointLight(colorHex, 1.5, 600);
+                        this.light.decay = 2;
+                        this.mesh.add(this.light);
+                    }
+
+                    // 尾迹 (所有天体都有，但样式不同)
+                    this.trailPositions = new Float32Array(TRAIL_LENGTH * 3);
+                    this.trailGeometry = new THREE.BufferGeometry();
+                    this.trailGeometry.setAttribute('position', new THREE.BufferAttribute(this.trailPositions, 3));
+                    
+                    const trailMaterial = new THREE.LineBasicMaterial({
+                        color: type === 'STAR' ? colorHex : 0xffffff,
+                        transparent: true,
+                        opacity: type === 'STAR' ? 0.6 : 0.3,
+                        blending: THREE.AdditiveBlending,
+                        linewidth: 2 
+                    });
+                    this.trail = new THREE.Line(this.trailGeometry, trailMaterial);
+                    scene.add(this.trail);
+                    scene.add(this.mesh);
+                }
+
+                setPosition(x, y, z) {
+                    this.position.set(x, y, z);
+                    this.mesh.position.copy(this.position);
+                    // 重置尾迹
+                    for(let i=0; i<TRAIL_LENGTH*3; i++) this.trailPositions[i] = 0; 
+                }
+
+                setVelocity(x, y, z) {
+                    this.velocity.set(x, y, z);
+                }
+
+                updateTrail() {
+                    const positions = this.trailGeometry.attributes.position.array;
+                    // 移动数据
+                    for (let i = (TRAIL_LENGTH - 1) * 3; i > 2; i -= 3) {
+                        positions[i] = positions[i - 3];
+                        positions[i + 1] = positions[i - 2];
+                        positions[i + 2] = positions[i - 1];
+                    }
+                    // 更新头部
+                    positions[0] = this.position.x;
+                    positions[1] = this.position.y;
+                    positions[2] = this.position.z;
+                    this.trailGeometry.attributes.position.needsUpdate = true;
+                }
+            }
+
+            const bodies = [];
+            let planet; // 引用
+
+            // --- 6. 核心逻辑：物理与纪元 ---
+            function updatePhysicsAndLogic() {
+                const dt = 0.05 * timeScale;
+                
+                // 更新时间
+                currentYear += dt * 0.5; 
+                uiYear.innerText = Math.floor(currentYear);
+
+                // --- 物理力学计算 (N-Body) ---
+                const forces = bodies.map(() => new THREE.Vector3());
+                let totalFluxOnPlanet = 0; // 行星接收的总光照
+
+                for (let i = 0; i < bodies.length; i++) {
+                    for (let j = 0; j < bodies.length; j++) {
+                        if (i === j) continue;
+                        const bodyA = bodies[i];
+                        const bodyB = bodies[j];
+
+                        // 简化：行星质量极小，不影响恒星 (但受恒星影响)
+                        if (bodyA.type === 'STAR' && bodyB.type === 'PLANET') continue;
+
+                        const diff = new THREE.Vector3().subVectors(bodyB.position, bodyA.position);
+                        const distSq = diff.lengthSq();
+                        const dist = Math.sqrt(distSq);
+                        
+                        // 万有引力
+                        const forceMagnitude = (G * bodyA.mass * bodyB.mass) / (distSq + SOFTENING);
+                        forces[i].add(diff.normalize().multiplyScalar(forceMagnitude));
+
+                        // 顺便计算行星受到恒星的辐射通量 (Flux ~ 1/r^2)
+                        // 用于纪元判定
+                        if (bodyA.type === 'PLANET' && bodyB.type === 'STAR') {
+                            // 辐射量 = 恒星质量(代表光度) / 距离平方
+                            totalFluxOnPlanet += (bodyB.mass * 100) / distSq; 
+                        }
+                    }
+                }
+
+                // 应用力并更新位置
+                for (let i = 0; i < bodies.length; i++) {
+                    const body = bodies[i];
+                    const acceleration = forces[i].divideScalar(body.mass);
+                    body.velocity.add(acceleration.multiplyScalar(dt));
+                    body.position.add(body.velocity.clone().multiplyScalar(dt));
+                    body.mesh.position.copy(body.position);
+                    body.updateTrail();
+                }
+
+                // --- 纪元判定逻辑 ---
+                updateEraSystem(totalFluxOnPlanet);
+            }
+
+            function updateEraSystem(flux) {
+                // 判定环境是否宜居
+                const isHabitable = flux >= MIN_HABITABLE_TEMP && flux <= MAX_HABITABLE_TEMP;
+
+                if (isHabitable) {
+                    consecutiveStableFrames++;
+                } else {
+                    // 如果环境恶劣
+                    if (eraStatus === 'STABLE') {
+                        // 恒纪元结束，文明毁灭
+                        triggerDestruction(flux);
+                    }
+                    consecutiveStableFrames = 0;
+                }
+
+                // 状态机切换：进入恒纪元
+                if (eraStatus === 'CHAOTIC' && consecutiveStableFrames > FRAMES_TO_STABILIZE) {
+                    eraStatus = 'STABLE';
+                    stableStartYear = currentYear;
+                    
+                    uiEraBadge.innerText = "恒纪元 (Stable Era)";
+                    uiEraBadge.className = "era-status era-stable";
+                    uiEraBadge.innerText += " " + Math.floor(currentYear) + "起";
+                    
+                    uiEraLog.innerHTML = `<span class="highlight">文明萌发：</span>环境适宜，新的文明在恒纪元中诞生。`;
+                }
+
+                // 更新恒纪元显示
+                if (eraStatus === 'STABLE') {
+                    const duration = Math.floor(currentYear - stableStartYear);
+                    uiEraBadge.innerText = `恒纪元持续中: ${duration} 年`;
+                    
+                    // 实时更新最长记录
+                    if (duration > maxStableDuration) {
+                        maxStableDuration = duration;
+                        uiMaxStable.innerText = maxStableDuration;
+                    }
+                }
+            }
+
+            function triggerDestruction(finalFlux) {
+                const duration = Math.floor(currentYear - stableStartYear);
+                eraStatus = 'CHAOTIC';
+                
+                uiEraBadge.innerText = "乱纪元 (Chaotic Era)";
+                uiEraBadge.className = "era-status era-chaotic";
+
+                let cause = "";
+                if (finalFlux > MAX_HABITABLE_TEMP) {
+                    cause = "三日凌空，烈焰焚天";
+                } else {
+                    cause = "长夜漫漫，严寒永夜";
+                }
+
+                const logMsg = `第 <span class="highlight">${Math.floor(currentYear)}</span> 年：文明毁灭。<br>
+                                原因：${cause}。<br>
+                                本次恒纪元维持了 ${duration} 年。`;
+                uiEraLog.innerHTML = logMsg;
+            }
+
+            // --- 7. 初始化场景物体 ---
+            function resetSimulation() {
+                // 清理旧物体
+                bodies.forEach(b => {
+                    scene.remove(b.mesh);
+                    scene.remove(b.trail);
+                });
+                bodies.length = 0;
+                
+                // 重置UI
+                currentYear = 0;
+                consecutiveStableFrames = 0;
+                eraStatus = 'CHAOTIC';
+                uiEraBadge.className = "era-status era-chaotic";
+                uiEraBadge.innerText = "乱纪元 (Chaotic Era)";
+                uiEraLog.innerText = "宇宙重启，等待文明诞生...";
+                
+                // 注意：这里不重置 maxStableDuration，以便在多次重启中保留最高记录
+                // 如果需要重置，可以取消下面这行的注释
+                // maxStableDuration = 0; uiMaxStable.innerText = 0;
+
+                // 创建恒星
+                const starA = new CelestialBody('STAR', 0xff5555, 180, 2.5, 'rgba(255, 50, 50, 1)', 'A');
+                const starB = new CelestialBody('STAR', 0x55aaff, 140, 2.2, 'rgba(50, 100, 255, 1)', 'B');
+                const starC = new CelestialBody('STAR', 0xffdd44, 110, 1.8, 'rgba(255, 200, 0, 1)', 'C');
+
+                // 随机化恒星位置和速度
+                [starA, starB, starC].forEach(star => {
+                    const r = 50 + Math.random() * 40; 
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(2 * Math.random() - 1);
+                    
+                    star.setPosition(
+                        r * Math.sin(phi) * Math.cos(theta),
+                        r * Math.sin(phi) * Math.sin(theta),
+                        r * Math.cos(phi)
+                    );
+
+                    // 切向速度 + 随机扰动
+                    const randomVec = new THREE.Vector3(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5);
+                    const tangent = new THREE.Vector3().crossVectors(star.position, randomVec).normalize();
+                    const speed = 0.5 + Math.random() * 0.5;
+                    star.setVelocity(tangent.x * speed, tangent.y * speed, tangent.z * speed);
+                    
+                    bodies.push(star);
+                });
+
+                // 创建行星 (三体人)
+                planet = new CelestialBody('PLANET', 0xffffff, 0.01, 0.8, '', 'Trisolaris');
+                
+                // 将行星放在 Star C 附近
+                const hostStar = starC;
+                const offset = new THREE.Vector3(15, 0, 0); 
+                planet.setPosition(
+                    hostStar.position.x + offset.x,
+                    hostStar.position.y + offset.y,
+                    hostStar.position.z + offset.z
+                );
+                
+                const orbitSpeed = Math.sqrt(G * hostStar.mass / 15);
+                planet.setVelocity(
+                    hostStar.velocity.x,
+                    hostStar.velocity.y + orbitSpeed, 
+                    hostStar.velocity.z
+                );
+
+                bodies.push(planet);
+            }
+
+            const resetBtn = document.getElementById('resetBtn');
+            const newBtn = resetBtn.cloneNode(true);
+            resetBtn.parentNode.replaceChild(newBtn, resetBtn);
+            newBtn.addEventListener('click', resetSimulation);
+
+            // --- 8. 摄像机控制 ---
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+            let camTheta = 0;
+            let camPhi = Math.PI / 3;
+            let baseDistance = 180;
+            
+            // 摄像机平滑追踪
+            let currentFocus = new THREE.Vector3();
+
+            function updateCamera() {
+                // 追踪所有物体的重心
+                let center = new THREE.Vector3();
+                for(let b of bodies) center.add(b.position);
+                center.divideScalar(bodies.length);
+
+                // 计算最大包围盒，决定缩放
+                let maxDist = 0;
+                for(let b of bodies) {
+                    const d = b.position.distanceTo(center);
+                    if(d > maxDist) maxDist = d;
+                }
+
+                currentFocus.lerp(center, 0.05);
+                
+                const targetDist = baseDistance + maxDist * 1.5;
+                
+                const x = currentFocus.x + targetDist * Math.sin(camPhi) * Math.cos(camTheta);
+                const y = currentFocus.y + targetDist * Math.cos(camPhi);
+                const z = currentFocus.z + targetDist * Math.sin(camPhi) * Math.sin(camTheta);
+
+                camera.position.set(x, y, z);
+                camera.lookAt(currentFocus);
+            }
+
+            // 输入事件
+            document.addEventListener('mousedown', () => isDragging = true);
+            document.addEventListener('mouseup', () => isDragging = false);
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    camTheta -= (e.offsetX - previousMousePosition.x) * 0.005;
+                    camPhi -= (e.offsetY - previousMousePosition.y) * 0.005;
+                    camPhi = Math.max(0.1, Math.min(Math.PI - 0.1, camPhi));
+                }
+                previousMousePosition = { x: e.offsetX, y: e.offsetY };
+            });
+            document.addEventListener('wheel', (e) => {
+                baseDistance += e.deltaY * 0.1;
+                baseDistance = Math.max(50, Math.min(1000, baseDistance));
+            });
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // --- 9. 主循环 ---
+            function animate() {
+                requestAnimationFrame(animate);
+
+                updatePhysicsAndLogic();
+                updateCamera();
+
+                // 银河旋转
+                backgroundStars.rotation.y += 0.0001;
+
+                // 恒星光晕呼吸效果
+                const time = Date.now() * 0.002;
+                bodies.forEach((b, idx) => {
+                    if(b.type === 'STAR') {
+                        const scaleBase = b.mass/50 * 5; 
+                        const pulse = 1 + Math.sin(time * timeScale + idx) * 0.05; 
+                        b.glow.scale.set(scaleBase * pulse * 2.5, scaleBase * pulse * 2.5, 1);
+                    }
+                });
+
+                renderer.render(scene, camera);
+            }
+
+            resetSimulation();
+            animate();
+        })();
+    </script>
+</body>
+</html>
