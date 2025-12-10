@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haruichi - Creative Developer & Photographer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        dark: '#0a0a0a',
+                        light: '#f4f4f4',
+                        accent: '#FF3333'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Cursor styling */
+        body {
+            cursor: default;
+        }
+        
+        .project-card:hover .project-image {
+            transform: scale(1.05);
+            filter: grayscale(0%);
+        }
+
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-dark text-light transition-colors duration-500 selection:bg-pink-300 selection:text-black font-sans antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 mix-blend-difference text-white px-6 py-6 flex justify-between items-center bg-transparent backdrop-blur-sm">
+        <div class="font-bold text-xl tracking-tighter">HARU<span class="text-xs align-top opacity-50">.DEV</span></div>
+        
+        <div class="hidden md:flex space-x-12 text-sm font-mono uppercase tracking-widest">
+            <a href="#about" class="hover:line-through decoration-2 decoration-white">关于</a>
+            <a href="#work" class="hover:line-through decoration-2 decoration-white">项目</a>
+            <a href="#contact" class="hover:line-through decoration-2 decoration-white">联系</a>
+        </div>
+
+        <button id="theme-toggle" class="text-xs font-mono border border-white/30 px-3 py-1 rounded-full hover:bg-white hover:text-black transition-all uppercase">
+            Switch Vibe
+        </button>
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <div class="fixed bottom-6 right-6 z-50 md:hidden">
+        <a href="#contact" class="bg-white text-black px-6 py-3 rounded-full font-bold shadow-lg">Say Hi</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex flex-col justify-center px-6 pt-24 pb-12 relative overflow-hidden">
+        <!-- Background decorative text -->
+        <div class="absolute -right-20 top-40 text-[20vw] font-black opacity-[0.03] leading-none pointer-events-none select-none">
+            LENS/DEV
+        </div>
+
+        <div class="max-w-5xl mx-auto w-full z-10">
+            <p class="font-mono text-sm md:text-base text-gray-400 mb-4 animate-pulse">
+                • Google SWE / Shanghai & MTV
+            </p>
+            <h1 class="text-5xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter leading-[0.9] mb-8 uppercase">
+                Haruichi<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-gray-500 md:text-white md:bg-none">Captures</span>
+            </h1>
+            <div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
+                <h2 class="text-xl md:text-3xl font-light text-gray-300 max-w-2xl leading-relaxed">
+                    22岁 / 谷歌前端开发 / 本硕985<br>
+                    喜欢研究 <span class="italic font-serif text-white">新鲜玩意</span>，代码与快门声是我的双重生活。
+                </h2>
+                <div class="font-mono text-xs text-gray-500 text-right hidden md:block">
+                    SCROLL TO EXPLORE<br>
+                    ↓
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee Separator -->
+    <div class="py-12 border-y border-white/10 bg-white/5 backdrop-blur-sm marquee-container font-mono text-xs md:text-sm tracking-widest uppercase">
+        <div class="marquee-content">
+            WEBGL • THREE.JS • GOOGLE CLOUD • NEXT.JS • FILM PHOTOGRAPHY • STREET SNAP • GENERATIVE ART • SHADER • LEICA • WEBGL • THREE.JS • GOOGLE CLOUD • NEXT.JS • FILM PHOTOGRAPHY • STREET SNAP •
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about" class="py-32 px-6 max-w-5xl mx-auto">
+        <div class="grid md:grid-cols-12 gap-12">
+            <div class="md:col-span-4">
+                <h3 class="text-xs font-mono uppercase tracking-widest text-gray-500 sticky top-32">01 — 关于我</h3>
+            </div>
+            <div class="md:col-span-8 space-y-8 text-lg md:text-2xl font-light leading-relaxed text-gray-200">
+                <p>
+                    我是 Haruichi，一个游走在逻辑代码与光影美学之间的开发者。
+                </p>
+                <p>
+                    22 岁，国内 Top 2 高校本硕连读毕业。毕业后加入 <strong>Google</strong> 核心团队，专注于 Creative Development 和 Web 图形学探索。
+                </p>
+                <p>
+                    白天我在为几十亿用户优化前端体验，夜晚我是一个沉迷街头摄影与胶片冲洗的暗房发烧友。我相信技术不应该是冰冷的，它也可以定格瞬间的情绪。
+                </p>
+                
+                <div class="mt-12 pt-12 border-t border-white/10 grid grid-cols-2 gap-8 text-sm font-mono text-gray-400">
+                    <div>
+                        <h4 class="text-white mb-4 uppercase tracking-widest">成就 / Awards</h4>
+                        <ul class="space-y-2">
+                            <li>ACM-ICPC Regional Gold</li>
+                            <li>Google Hackathon Winner</li>
+                            <li>CSSDA (Site of the Day)</li>
+                            <li>National Geo Photo Contest (入围)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white mb-4 uppercase tracking-widest">关注我</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="hover:text-white transition-colors">Bilibili ↗</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Instagram ↗</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Xiaohongshu ↗</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">500px ↗</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work Section -->
+    <section id="work" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-24 flex items-end justify-between border-b border-white/10 pb-8">
+                <h3 class="text-6xl md:text-8xl font-black tracking-tighter">作品</h3>
+                <span class="font-mono text-sm text-gray-500 hidden md:inline-block">SELECTED PROJECTS</span>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Project List Item Component -->
+                
+                <div class="group relative border-b border-white/10 py-8 hover:bg-white hover:text-black transition-colors duration-300 cursor-pointer project-item">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between px-4">
+                        <div class="font-mono text-xs opacity-50 mb-2 md:mb-0 group-hover:text-black">#GOOG-001</div>
+                        <div class="text-3xl md:text-5xl font-bold uppercase tracking-tight">Chrome Arts Experiment</div>
+                        <div class="font-mono text-xs mt-2 md:mt-0 opacity-50 group-hover:text-black">2024 / Work</div>
+                    </div>
+                </div>
+
+                <div class="group relative border-b border-white/10 py-8 hover:bg-white hover:text-black transition-colors duration-300 cursor-pointer project-item">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between px-4">
+                        <div class="font-mono text-xs opacity-50 mb-2 md:mb-0 group-hover:text-black">#CAM-OPT-02</div>
+                        <div class="text-3xl md:text-5xl font-bold uppercase tracking-tight">Virtual Darkroom Lab</div>
+                        <div class="font-mono text-xs mt-2 md:mt-0 opacity-50 group-hover:text-black">2024 / Personal</div>
+                    </div>
+                </div>
+
+                <div class="group relative border-b border-white/10 py-8 hover:bg-white hover:text-black transition-colors duration-300 cursor-pointer project-item">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between px-4">
+                        <div class="font-mono text-xs opacity-50 mb-2 md:mb-0 group-hover:text-black">#UNIV-985</div>
+                        <div class="text-3xl md:text-5xl font-bold uppercase tracking-tight">Campus 3D Map Viz</div>
+                        <div class="font-mono text-xs mt-2 md:mt-0 opacity-50 group-hover:text-black">2023 / Thesis</div>
+                    </div>
+                </div>
+
+                <div class="group relative border-b border-white/10 py-8 hover:bg-white hover:text-black transition-colors duration-300 cursor-pointer project-item">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between px-4">
+                        <div class="font-mono text-xs opacity-50 mb-2 md:mb-0 group-hover:text-black">#AI-IMG-04</div>
+                        <div class="text-3xl md:text-5xl font-bold uppercase tracking-tight">Film Grain Simulation AI</div>
+                        <div class="font-mono text-xs mt-2 md:mt-0 opacity-50 group-hover:text-black">2023 / AI Research</div>
+                    </div>
+                </div>
+
+                <div class="group relative border-b border-white/10 py-8 hover:bg-white hover:text-black transition-colors duration-300 cursor-pointer project-item">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between px-4">
+                        <div class="font-mono text-xs opacity-50 mb-2 md:mb-0 group-hover:text-black">#WEBGL-05</div>
+                        <div class="text-3xl md:text-5xl font-bold uppercase tracking-tight">Cyberpunk Shanghai</div>
+                        <div class="font-mono text-xs mt-2 md:mt-0 opacity-50 group-hover:text-black">2022 / Creative</div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-12">
+                    <button class="text-sm font-mono uppercase tracking-widest border-b border-transparent hover:border-white transition-all pb-1">
+                        View GitHub (99+)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / Contact -->
+    <section id="contact" class="min-h-[70vh] flex flex-col justify-between px-6 pt-32 pb-12 bg-white text-black">
+        <div class="max-w-6xl mx-auto w-full">
+            <h3 class="text-xs font-mono uppercase tracking-widest mb-8 text-gray-500">03 — 联络</h3>
+            <h2 class="text-4xl md:text-7xl font-black leading-tight tracking-tighter mb-12">
+                想聊聊前端技术?<br>
+                或者推荐好用的胶片相机?<br>
+                <a href="mailto:hi@haruichi.dev" class="hover:text-pink-500 transition-colors decoration-4 underline underline-offset-8">给我发邮件.</a>
+            </h2>
+        </div>
+
+        <div class="max-w-6xl mx-auto w-full grid md:grid-cols-3 gap-8 text-sm font-mono uppercase tracking-widest">
+            <div>
+                <span class="text-gray-400 block mb-2">Email</span>
+                <a href="mailto:hi@haruichi.dev" class="hover:underline">hi@haruichi.dev</a>
+            </div>
+            <div>
+                <span class="text-gray-400 block mb-2">Location</span>
+                Shanghai / Mountain View
+            </div>
+            <div class="md:text-right">
+                <span class="text-gray-400 block mb-2">© 2025 Haruichi</span>
+                Code & Aperture.
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Theme Toggle Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const nav = document.querySelector('nav');
+        
+        let isDark = true;
+
+        themeToggleBtn.addEventListener('click', () => {
+            isDark = !isDark;
+            
+            if (isDark) {
+                // Switch to Dark Mode
+                body.classList.remove('bg-gray-100', 'text-black');
+                body.classList.add('bg-dark', 'text-light');
+                
+                // Adjust nav visibility for contrast
+                nav.classList.add('mix-blend-difference', 'text-white');
+                nav.classList.remove('text-black');
+            } else {
+                // Switch to Light Mode
+                body.classList.remove('bg-dark', 'text-light');
+                body.classList.add('bg-gray-100', 'text-black');
+                
+                // Adjust nav
+                nav.classList.remove('mix-blend-difference', 'text-white');
+                nav.classList.add('text-black');
+            }
+        });
+
+        // Simple smooth scroll behavior for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Subtle parallax effect on scroll for the Hero Text
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const heroText = document.querySelector('h1');
+            if(scrollY < 600) {
+                heroText.style.transform = `translateY(${scrollY * 0.2}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
