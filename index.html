@@ -237,9 +237,9 @@
                     THREE-BODY SIMULATOR
                 </a>
                 
-                <!-- Placeholder Link for visual balance -->
-                <a href="#" class="nav-link" id="link-logs">
-                    SYSTEM LOGS
+                <!-- Blog Link (UPDATED PATH) -->
+                <a href="blog/index.html" class="nav-link" id="link-blog">
+                    SYSTEM BLOG
                 </a>
 
                 <!-- Placeholder Link -->
@@ -260,14 +260,14 @@
             en: {
                 title: "SYSTEM_ROOT",
                 simulator: "THREE-BODY SIMULATOR",
-                logs: "SYSTEM LOGS",
+                blog: "SYSTEM BLOG",
                 about: "ABOUT PROTOCOL",
                 footer: "POWERED BY GEMINI/YUN"
             },
             zh: {
                 title: "系统根目录",
                 simulator: "三体模拟器",
-                logs: "系统日志",
+                blog: "系统博客",
                 about: "关于协议",
                 footer: "由 GEMINI/YUN 驱动"
             }
@@ -279,7 +279,7 @@
         // DOM Elements
         const elTitle = document.getElementById('page-title');
         const elSimulator = document.getElementById('link-simulator');
-        const elLogs = document.getElementById('link-logs');
+        const elBlog = document.getElementById('link-blog');
         const elAbout = document.getElementById('link-about');
         const elFooter = document.getElementById('footer-text');
         
@@ -320,7 +320,7 @@
             
             elTitle.textContent = t.title;
             elSimulator.textContent = t.simulator;
-            elLogs.textContent = t.logs;
+            elBlog.textContent = t.blog;
             elAbout.textContent = t.about;
             elFooter.textContent = t.footer;
 
