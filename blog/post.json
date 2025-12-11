@@ -1,0 +1,26 @@
+[
+  {
+    "id": "intro-webgl",
+    "title": "Chrome Arts 实验：当 WebGL 遇上东方水墨",
+    "date": "2024-03-15",
+    "category": "Creative Coding",
+    "file": "posts/first-contact.md",
+    "desc": "探索如何在浏览器中用着色器模拟宣纸的渗透效果。"
+  },
+  {
+    "id": "darkroom-ai",
+    "title": "构建虚拟暗房：复刻柯达 Portra 400 色彩",
+    "date": "2024-02-28",
+    "category": "Photography",
+    "file": "posts/dark-forest.md",
+    "desc": "用 Python 分析胶片颗粒，还原模拟时代的质感。"
+  },
+  {
+    "id": "shanghai-walk",
+    "title": "上海街头：弄堂里的赛博朋克",
+    "date": "2023-11-10",
+    "category": "Street Snap",
+    "file": "posts/shanghai.md",
+    "desc": "带着徕卡 M6 游走在即将拆迁的老城区。"
+  }
+]
