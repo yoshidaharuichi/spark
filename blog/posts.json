@@ -22,5 +22,13 @@
     "category": "Street Snap",
     "file": "posts/shanghai.md",
     "desc": "带着徕卡 M6 游走在即将拆迁的老城区。"
+  },
+  {
+    "id": "about me",
+    "title": "关于我...",
+    "date": "2025-12-11",
+    "category": "general",
+    "file": "posts/about.md",
+    "desc": "关于我。"
   }
 ]
