@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TERMINAL_ACCESS</title>
-    <!-- Importing a retro pixel font -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -219,12 +218,10 @@
 <body>
 
     <div class="crt-container">
-        <!-- Overlay Effects -->
         <div class="scanlines"></div>
         <div class="vignette"></div>
         <div class="flicker"></div>
 
-        <!-- Main Content -->
         <div class="content">
             <header>
                 <h1 id="page-title">SYSTEM_ROOT</h1>
@@ -232,17 +229,18 @@
             </header>
 
             <nav>
-                <!-- Target Link -->
                 <a href="threebody-simulator.html" class="nav-link" id="link-simulator">
                     THREE-BODY SIMULATOR
                 </a>
+
+                <a href="astra.html" class="nav-link" id="link-astra">
+                    ASTRA SIMULATOR
+                </a>
                 
-                <!-- Blog Link (UPDATED PATH) -->
                 <a href="blog/index.html" class="nav-link" id="link-blog">
                     SYSTEM BLOG
                 </a>
 
-                <!-- Placeholder Link -->
                 <a href="#" class="nav-link" id="link-about">
                     ABOUT
                 </a>
@@ -260,6 +258,7 @@
             en: {
                 title: "SYSTEM_ROOT",
                 simulator: "THREE-BODY SIMULATOR",
+                astra: "ASTRA SIMULATOR", // Added
                 blog: "SYSTEM BLOG",
                 about: "ABOUT PROTOCOL",
                 footer: "POWERED BY GEMINI/YUN"
@@ -267,6 +266,7 @@
             zh: {
                 title: "系统根目录",
                 simulator: "三体模拟器",
+                astra: "星辰模拟器", // Added
                 blog: "系统博客",
                 about: "关于协议",
                 footer: "由 GEMINI/YUN 驱动"
@@ -279,6 +279,7 @@
         // DOM Elements
         const elTitle = document.getElementById('page-title');
         const elSimulator = document.getElementById('link-simulator');
+        const elAstra = document.getElementById('link-astra'); // Added
         const elBlog = document.getElementById('link-blog');
         const elAbout = document.getElementById('link-about');
         const elFooter = document.getElementById('footer-text');
@@ -320,6 +321,7 @@
             
             elTitle.textContent = t.title;
             elSimulator.textContent = t.simulator;
+            elAstra.textContent = t.astra; // Added
             elBlog.textContent = t.blog;
             elAbout.textContent = t.about;
             elFooter.textContent = t.footer;
